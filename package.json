@@ -51,7 +51,7 @@
     "electron-squirrel-startup": "1.0.0",
     "font-awesome": "4.7.0",
     "jquery": "3.5.1",
-    "lodash": "4.17.20",
+    "lodash": "4.17.21",
     "owasp-threat-dragon-core": "1.4.0",
     "promise-fs": "2.1.1",
     "yargs": "16.0.0"
