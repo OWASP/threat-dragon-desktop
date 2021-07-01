@@ -12,7 +12,7 @@ const userDataPath = electron.remote.app.getPath('userData');
 
 function electronservice(common) {
 
-    log.debug('Electron Service logging verbosity level', logLevel);
+    log.debug('Electron Service: logging verbosity level', logLevel);
 
     var logInfo = common.logger.getLogFn('electron service', 'info');
     var logError = common.logger.getLogFn('electron service', 'error');
@@ -49,16 +49,16 @@ function electronservice(common) {
     }
 
     function save(onSave, onNoSave) {
-        log.debug('Electron Service save');
+        log.debug('Electron Service: save');
         dialog.showSaveDialog(remote.getCurrentWindow(), {
             defaultPath: "new-model.json",
             filters: [{ name: 'Threat Models', extensions: ['json'] }]
         }).then(result => {
             if (result.canceled) {
-                log.warn('Electron Service save canceled');
+                log.warn('Electron Service: save canceled');
                 onNoSave();
             } else {
-                log.info('Electron Service save to file', result.filePath);
+                log.info('Electron Service: save to file', result.filePath);
                 onSave(result.filePath);
             }
         }).catch(err => {
@@ -67,16 +67,22 @@ function electronservice(common) {
     }
 
     function saveAsPDF(defaultPath, onSave, onNoSave) {
-        log.debug('Electron Service save PDF');
+        log.debug('Electron Service: save PDF using path:', defaultPath);
+        if (defaultPath == null) {
+            logInfo('No path to model found, ensure model has been saved');
+            log.warn('Electron Service: no valid path, no PDF print');
+            onNoSave();
+            return;
+        }
         dialog.showSaveDialog(remote.getCurrentWindow(), {
             defaultPath: defaultPath,
             filters: [{ name: 'PDF files', extensions: ['pdf'] }]
         }).then(result => {
             if (result.canceled) {
-                log.warn('Electron Service save PDF canceled');
+                log.warn('Electron Service: save PDF canceled');
                 onNoSave();
             } else {
-                log.info('Electron Service save to PDF file', result.filePath);
+                log.info('Electron Service: save to PDF file', result.filePath);
                 onSave(result.filePath);
             }
         }).catch(err => {
@@ -85,15 +91,15 @@ function electronservice(common) {
     }
 
     function open(onOpen, onNoOpen) {
-        log.debug('Electron Service open');
+        log.debug('Electron Service: open');
         dialog.showOpenDialog(remote.getCurrentWindow(), {
             filters: [{ name: 'Threat Models', extensions: ['json'] }, { name: 'All Files', extensions: ['*'] }]
         }).then(result => {
             if (result.canceled) {
-                log.info('Electron Service open canceled');
+                log.info('Electron Service: open canceled');
                 onNoOpen();
             } else {
-                log.info('Electron Service open file', result.filePaths);
+                log.info('Electron Service: open file', result.filePaths);
                 onOpen(result.filePaths);
             }
         }).catch(err => {
