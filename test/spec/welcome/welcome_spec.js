@@ -19,9 +19,10 @@ describe('welcome controller', function () {
                 save: function() {}
             },
             log: {
-                error: function() {},
                 debug: function() {},
+                error: function() {},
                 info: function() {},
+                silly: function() {},
                 warn: function() {}
             },
             logLevel: 'debug'
@@ -60,9 +61,10 @@ describe('welcome controller', function () {
         
     });
     
-    describe('newmodel tests', function () {
+    describe('new model tests', function () {
 
         it('should create a new model file', function() {
+            var testModel = './test-model';
             var testFileName = 'test file name';
             var testFilenames = [testFileName];
             mockElectron.dialog.save = function(onSave) {
@@ -73,7 +75,7 @@ describe('welcome controller', function () {
             spyOn(fs, 'writeFileSync').and.callThrough();
             spyOn($scope, '$apply').and.callThrough();
             spyOn($location, 'path').and.callThrough();
-            $scope.vm.openNewModel();
+            $scope.vm.openNewModel(testModel);
 
             expect($location.path.calls.count()).toEqual(1);
             expect($location.path()).toEqual('/threatmodel/' + testFileName);
@@ -82,6 +84,7 @@ describe('welcome controller', function () {
         });
 
         it('should not create a new model file - cancel', function() {
+            var testModel = './test-model';
             mockElectron.dialog.save = function(onSave, onNoSave) {
                 onNoSave();
             }
@@ -90,7 +93,7 @@ describe('welcome controller', function () {
             spyOn(fs, 'writeFileSync').and.callThrough();
             spyOn($scope, '$apply').and.callThrough();
             spyOn($location, 'path').and.callThrough();
-            $scope.vm.openNewModel();
+            $scope.vm.openNewModel(testModel);
 
             expect($location.path.calls.count()).toEqual(0);
             expect(fs.writeFileSync).not.toHaveBeenCalled();
@@ -98,6 +101,7 @@ describe('welcome controller', function () {
         });
 
         it('should handle a create file error', function() {
+            var testModel = './test-model';
             var testFileName = 'test file name';
             var testFilenames = [testFileName];
             var testError = 'test error';
@@ -111,7 +115,7 @@ describe('welcome controller', function () {
             spyOn(fs, 'writeFileSync').and.callThrough();
             spyOn($scope, '$apply').and.callThrough();
             spyOn($location, 'path').and.callThrough();
-            $scope.vm.openNewModel();
+            $scope.vm.openNewModel(testModel);
 
             expect($location.path.calls.count()).toEqual(0);
             expect(fs.writeFileSync).toHaveBeenCalled();
@@ -119,7 +123,7 @@ describe('welcome controller', function () {
         });
     });
     
-    describe('viewmodel tests', function () {
+    describe('view model tests', function () {
 
         it('should open a model file', function() {
             var testFileName = 'test file name';

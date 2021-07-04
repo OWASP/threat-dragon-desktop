@@ -1,9 +1,10 @@
 'use strict';
 
-function datacontext($q, datacontextdemo, electron) {
+function datacontext($q, electron) {
 
     const log = electron.log;
-    log.debug('Datacontext logging verbosity level', electron.logLevel);
+    const logID = 'Datacontext Service: ';
+    log.debug(logID + 'logging verbosity level:', electron.logLevel);
 
     var fsp = require('promise-fs');
     var threatModelLocation = null;
@@ -26,18 +27,11 @@ function datacontext($q, datacontextdemo, electron) {
     return service;
 
     function load(location, forceQuery) {
-        log.debug('Datacontext Service: load location:', location);
+        log.debug(logID + 'load location:', location);
         var result;
 
-        if (location === 'demo') {
-            service.threatModelLocation = null;
-            service.lastLoadedLocation = null;
-            setLocation(service.threatModelLocation);
-            result = datacontextdemo.load(forceQuery);
-        } else {
-            service.threatModelLocation = location;
-            result = loadFromFile(forceQuery);
-        }
+        service.threatModelLocation = location;
+        result = loadFromFile(forceQuery);
 
         return result.then(onLoaded, onLoadError);
 
@@ -45,7 +39,7 @@ function datacontext($q, datacontextdemo, electron) {
             service.threatModel = model;
             setLocation(service.threatModelLocation);
 
-            log.debug('Datacontext Service: loaded location:', service.threatModelLocation);
+            log.debug(logID + 'loaded location:', service.threatModelLocation);
             return $q.resolve(service.threatModel);
         }
 
@@ -53,25 +47,25 @@ function datacontext($q, datacontextdemo, electron) {
             service.threatModel = null;
             service.threatModelLocation = null;
             service.lastLoadedLocation = null;
-            log.warn('Datacontext Service: load errored', error);
+            log.warn(logID + 'load errored', error);
             return $q.reject(error);
         }
     }
 
     function create(location, model) {
-        log.debug('Datacontext Service: create with null location');
+        log.debug(logID + 'create with null location');
         service.threatModelLocation = null;
         return save(model);
     }
 
     function update() {
-        log.debug('Datacontext Service: update model');
-        log.silly('Datacontext Service: update model:', service.threatModel);
+        log.debug(logID + 'update model');
+        //log.silly(logID + 'update model:', service.threatModel);
         return save(service.threatModel);
     }
 
     function saveThreatModelDiagram(diagramId, diagramData) {
-        log.debug('Datacontext Service: save diagram id:', diagramId);
+        log.debug(logID + 'save diagram id:', diagramId);
         var diagramToSave = service.threatModel.detail.diagrams.find(function (diagram) {
             return diagram.id == diagramId;
         });
@@ -79,26 +73,26 @@ function datacontext($q, datacontextdemo, electron) {
         if (diagramToSave) {
             diagramToSave.diagramJson = diagramData.diagramJson;
             diagramToSave.size = diagramData.size;
-            log.debug('Datacontext Service: save diagram success id:', diagramId);
+            log.debug(logID + 'save diagram with id:', diagramId);
             return update();
         } else {
-            log.warn('Datacontext Service: save diagram invalid id:', diagramId);
+            log.warn(logID + 'save diagram id is invalid:', diagramId);
             return $q.reject(new Error('invalid diagram id'));
         }
     }
 
     function deleteModel() {
-        log.debug('Datacontext Service: delete model');
+        log.debug(logID + 'delete model');
 
         if (service.threatModelLocation) {
             return fsp.unlink(service.threatModelLocation).then(onDeleted);
         } else {
-            log.warn('Datacontext -> delete model no location specified');
+            log.warn(logID + 'delete model no location specified');
             return $q.reject('No file specified');
         }
 
         function onDeleted() {
-            log.debug('Datacontext Service: delete model successful:', service.threatModelLocation);
+            log.debug(logID + 'delete model successful:', service.threatModelLocation);
             service.threatModel = null;
             service.threatModelLocation = null;
             setLocation(null);
@@ -107,7 +101,7 @@ function datacontext($q, datacontextdemo, electron) {
     }
 
     function close() {
-        log.debug('Datacontext Service: close location:', service.threatModelLocation);
+        log.debug(logID + 'close location:', service.threatModelLocation);
         service.threatModel = null;
         service.threatModelLocation = null;
         service.lastLoadedLocation = null;
@@ -115,7 +109,7 @@ function datacontext($q, datacontextdemo, electron) {
     }
 
     function saveAs() {
-        log.debug('Datacontext Service: save as');
+        log.debug(logID + 'save as');
         service.threatModelLocation = null;
         return save(service.threatModel);
     }
@@ -124,10 +118,10 @@ function datacontext($q, datacontextdemo, electron) {
         var deferred = $q.defer();
 
         if (service.threatModelLocation && service.threatModelLocation != 'demo') {
-            log.debug('Datacontext Service: save location:', service.threatModelLocation);
+            log.debug(logID + 'save location:', service.threatModelLocation);
             doSave(service.threatModelLocation);
         } else {
-            log.debug('Datacontext Service: save demo file to new location');
+            log.debug(logID + 'save demo file to new location');
             electron.dialog.save(function (fileName) {
                 service.threatModelLocation = fileName;
                 doSave(service.threatModelLocation);
@@ -135,7 +129,7 @@ function datacontext($q, datacontextdemo, electron) {
                 onCancel()
             );
         }
-        log.silly('Datacontext Service: saved file to location:', service.threatModelLocation);
+        log.silly(logID + 'saved file to location:', service.threatModelLocation);
 
         return deferred.promise;
 
@@ -145,7 +139,7 @@ function datacontext($q, datacontextdemo, electron) {
         }
 
         function doSave(location) {
-            log.silly('Datacontext Service: saving to location:', location);
+            log.silly(logID + 'saving to location:', location);
             fsp.writeFile(location, JSON.stringify(model,null, 2)).then(
                 function() {
                     service.threatModelLocation = location;
@@ -155,20 +149,20 @@ function datacontext($q, datacontextdemo, electron) {
         }
 
         function onSavedThreatModel() {
-            log.silly('Datacontext Service: saved to location:', service.threatModelLocation);
+            log.silly(logID + 'saved to location:', service.threatModelLocation);
             setLocation(service.threatModelLocation);
             deferred.resolve({ model: service.threatModel, location: service.threatModelLocation });
         }
 
         function onSaveError(err) {
-            log.silly('Datacontext Service: failed to save to location:', service.threatModelLocation);
+            log.silly(logID + 'failed to save to location:', service.threatModelLocation);
             service.threatModelLocation = service.lastLoadedLocation;
             deferred.reject(err);
         }
     }
 
     function loadFromFile(forceQuery) {
-        log.debug('Datacontext Service: load from file:', service.threatModelLocation);
+        log.debug(logID + 'load from file:', service.threatModelLocation);
         if (service.threatModel && !forceQuery && service.lastLoadedLocation === service.threatModelLocation) {
             return $q.when(service.threatModel);
         }
@@ -179,7 +173,7 @@ function datacontext($q, datacontextdemo, electron) {
         return deferred.promise;
 
         function onLoadedThreatModel(result) {
-            log.silly('Datacontext Service: loaded from:', service.threatModelLocation);
+            log.silly(logID + 'loaded from:', service.threatModelLocation);
             var model;
             try {
                 model = JSON.parse(result);
@@ -203,7 +197,7 @@ function datacontext($q, datacontextdemo, electron) {
             title = 'OWASP Threat Dragon';
         }  
         electron.currentWindow.setTitle(title);
-        log.silly('Datacontext Service: set location title:', title);
+        log.silly(logID + 'set location title:', title);
     }
 }
 

@@ -63,14 +63,6 @@ function shell($rootScope, $scope, $location, $route, common, datacontext, elect
                         }
                     },
                     {
-                        label: 'Open Demo Model',
-                        accelerator: 'CmdOrCtrl+D',
-                        click: function() {
-                            $location.path('/threatmodel/demo');
-                            $scope.$apply();
-                        }
-                    },
-                    {
                         label: 'Save',
                         accelerator: 'CmdOrCtrl+S',
                         click() {
