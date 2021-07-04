@@ -214,7 +214,7 @@ describe('desktopreport controller', function () {
                 expect(options.pageSize).toEqual('A4');
             });
 
-            xit('should not save the PDF file', function() {
+            xit('should not save the PDF file on cancel', function() {
 
                 var testData = 'data';
                 mockElectron.currentWindow.webContents.printToPDF = function(settings, callback) {
@@ -222,6 +222,24 @@ describe('desktopreport controller', function () {
                 };
                 var done = jasmine.createSpy('done');
                 mockElectron.dialog.saveAsPDF = function(defaultPath, onSave, onCancel) {
+                    onCancel();
+                }
+                $controller('desktopreport as vm', { $scope: $scope });
+                $scope.$apply();
+                $scope.vm.savePDF(done);
+
+                expect(done).toHaveBeenCalled();
+            });
+
+            xit('should not save the PDF file on null path', function() {
+
+                var testData = 'data';
+                var nullPath;
+                mockElectron.currentWindow.webContents.printToPDF = function(settings, callback) {
+                    callback(null, testData);
+                };
+                var done = jasmine.createSpy('done');
+                mockElectron.dialog.saveAsPDF = function(nullPath, onSave, onCancel) {
                     onCancel();
                 }
                 $controller('desktopreport as vm', { $scope: $scope });

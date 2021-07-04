@@ -4,7 +4,7 @@ function desktopreport($q, $routeParams, $location, common, datacontext, threatm
 
     const globals = electron.globals;
     const log = electron.log;
-    log.debug('Desktop Report logging verbosity level', electron.logLevel);
+    log.debug('Desktop Report: logging verbosity level', electron.logLevel);
 
     var fsp = require('promise-fs');
     /*jshint validthis: true */
@@ -49,7 +49,7 @@ function desktopreport($q, $routeParams, $location, common, datacontext, threatm
 
     function getThreatModel(forceReload) {
         var location = threatModelLocation();
-        log.debug('Desktop Report get Threat Model from location', location);
+        log.debug('Desktop Report: get Threat Model from location', location);
 
         return datacontext.load(location, forceReload).then(onLoad, onError);
 
@@ -60,7 +60,7 @@ function desktopreport($q, $routeParams, $location, common, datacontext, threatm
     }
 
     function onLoaded() {
-        log.debug('Desktop Report loaded Threat Model location', threatModelLocation());
+        log.debug('Desktop Report: loaded Threat Model location', threatModelLocation());
         vm.loaded = true;
         return 'called onLoaded';
     }
@@ -68,12 +68,12 @@ function desktopreport($q, $routeParams, $location, common, datacontext, threatm
     function onError(err) {
         vm.error = err;
         logError(err.data.message);
-        log.error('Desktop Report', err.data.message);
+        log.error('Desktop Report:', err.data.message);
     }
 
     function exitApp() {
         let win = require('electron').remote.getCurrentWindow();
-        log.debug('Desktop Report exit app');
+        log.debug('Desktop Report: exit app');
         win.close();
     }
 
@@ -82,7 +82,7 @@ function desktopreport($q, $routeParams, $location, common, datacontext, threatm
     }
 
     function exportPDF() {
-        log.debug('Desktop Report export PDF');
+        log.debug('Desktop Report: export PDF');
         electron.currentWindow.webContents.printToPDF({
             landscape: false,
             marginsType: 0,
@@ -92,10 +92,10 @@ function desktopreport($q, $routeParams, $location, common, datacontext, threatm
         }).then(data => {
 
             var pdfPath = datacontext.threatModelLocation.replace('.json', '.pdf');
-            log.silly('Desktop Report on export PDF to', pdfPath);
+            log.silly('Desktop Report: on export PDF to', pdfPath);
 
             fsp.writeFile(pdfPath, data).then(function() { 
-                log.debug('Desktop Report exported PDF to', pdfPath);
+                log.debug('Desktop Report: exported PDF to', pdfPath);
                 //close the app after export
                 exitApp();
             }).catch(error => {
@@ -112,7 +112,7 @@ function desktopreport($q, $routeParams, $location, common, datacontext, threatm
     }
 
     function savePDF(done) {
-        log.debug('Desktop Report save PDF');
+        log.debug('Desktop Report: save PDF');
 
         electron.currentWindow.webContents.printToPDF({
             landscape: false,
@@ -123,7 +123,7 @@ function desktopreport($q, $routeParams, $location, common, datacontext, threatm
         }).then(data => {
 
             var defaultPath = null;
-            log.debug('Desktop Report on save PDF');
+            log.debug('Desktop Report: on save PDF');
 
             if (datacontext.threatModelLocation) {
                 defaultPath = datacontext.threatModelLocation.replace('.json', '.pdf');
@@ -131,7 +131,7 @@ function desktopreport($q, $routeParams, $location, common, datacontext, threatm
 
             electron.dialog.saveAsPDF(defaultPath, function (fileName) {
                 fsp.writeFile(fileName, data).then(function() { 
-                    log.debug('Desktop Report saved PDF');
+                    log.debug('Desktop Report: saved PDF');
                     done();
                 });
             },
@@ -148,15 +148,15 @@ function desktopreport($q, $routeParams, $location, common, datacontext, threatm
     }
 
     function printPDF(done) {
-        log.debug('Desktop Report print PDF');
+        log.debug('Desktop Report: print PDF');
         //use default print options
         electron.currentWindow.webContents.print({}, (success, errorType) => {
             if (success) {
                 logSuccess('Report printed successfully');
-                log.info('Desktop Report printed successfully');
+                log.info('Desktop Report: printed successfully');
             } else {
-                logError('Report printing failed');
-                log.error('Desktop Report printing failed:', errorType);
+                logError('Report printing failed: ' + errorType);
+                log.error('Desktop Report: printing failed:', errorType);
             }
             done();
         });

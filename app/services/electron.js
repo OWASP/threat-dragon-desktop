@@ -14,7 +14,6 @@ function electronservice(common) {
 	const logID = 'Electron Service: ';
 
     log.debug(logID + 'logging verbosity level', logLevel);
-
     var logInfo = common.logger.getLogFn('electron service', 'info');
     var logError = common.logger.getLogFn('electron service', 'error');
 
