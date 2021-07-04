@@ -45,9 +45,9 @@ function welcome($scope, $location, $route, common, electron, threatmodellocator
         });
     }
 
-    function openNewModel(filePath) {
-        log.debug(logID + 'open new model:', filePath);
-        var model = require(filePath);
+    function openNewModel(templateFile) {
+        log.debug(logID + 'open new model:', templateFile);
+        var model = require(templateFile);
         var success = true;
         electron.dialog.save(function (fileName) {
             fs.writeFileSync( fileName, JSON.stringify(model), 'utf8', function (err) {
