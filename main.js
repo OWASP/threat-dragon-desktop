@@ -85,7 +85,7 @@ global.params = {
   url: '/'
 }
 
-//Used to communicate with the ipcRenderer on threat-dragon-core to watch for unsaved changes
+//Used to communicate with the ipcRenderer in tdCore to watch for unsaved changes
 var ipc = require('electron').ipcMain;
 var diagramIsDirty = false;
 ipc.on('vmIsDirty', function(event, data){
