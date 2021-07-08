@@ -60,11 +60,11 @@ And the threat editing screen
 # Contributing
 
 Pull requests, feature requests, bug reports and feedback of any kind are very welcome, please refer to the page for
-[contributors](https://github.com/OWASP/threat-dragon-core/blob/main/CONTRIBUTING.md). 
+[contributors](https://github.com/OWASP/threat-dragon/blob/main/CONTRIBUTING.md).
 
 We are trying to keep the test coverage relatively high, so please try to update tests in any PRs and make PRs on the development branch.
-There are some [developer notes](https://github.com/OWASP/threat-dragon-core/blob/main/dev-notes.md) in the core
-[threat dragon](https://github.com/OWASP/threat-dragon-core) repo to help get started with this project.
+There are some [developer notes](https://github.com/OWASP/threat-dragon/blob/main/dev-notes.md) in the
+Threat Dragon [web application repo](https://github.com/OWASP/threat-dragon) to help get started with this project.
 
 # Vulnerability disclosure
 
